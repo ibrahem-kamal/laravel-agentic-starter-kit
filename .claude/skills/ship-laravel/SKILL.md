@@ -86,7 +86,7 @@ git log --oneline -15
 ```
 
 Look for the prefix style used recently. Common patterns:
-- `feat(PC-XXX): ...` (ticket-prefixed Conventional Commits — see PreConsult AI)
+- `feat(ABC-123): ...` (ticket-prefixed Conventional Commits — Jira/Linear/Trello ticket IDs in scope)
 - `feat: ...` (plain Conventional Commits)
 - `Add ...` (sentence-case freeform)
 

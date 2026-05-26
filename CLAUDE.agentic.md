@@ -72,7 +72,7 @@ If any fails, do not declare done. Investigate root cause — don't suppress wit
 
 ## Recommended global skills (if available)
 
-These ship with iki's global Claude config (or as Anthropic / community skills). Invoke them when relevant — don't duplicate their content into project code:
+These are widely-used Laravel / frontend skills available via [skills.sh](https://www.skills.sh), Anthropic's catalogue, or community publishers. The bundle assumes they exist in your global Claude config and references them — invoke them when relevant rather than duplicating their content into project code:
 
 - `laravel-best-practices` — Laravel idioms, N+1, caching, security
 - `livewire-development` — Livewire 4 specifics

@@ -2,9 +2,10 @@
 name: bootstrap-laravel-agentic
 description: >
   Install the Laravel Agentic Starter Kit into a Laravel project. Detects whether the project
-  uses Livewire/Flux or Vue/Inertia (or neither), prompts to install Laravel Boost, runs
-  graphify init, copies the bundled skills into .claude/skills/, and writes CLAUDE.agentic.md
-  and DESIGN.md without overwriting an existing CLAUDE.md. Use this skill the first time the
+  uses Livewire/Flux or Vue/Inertia (or neither), prompts to install Laravel Boost, offers to
+  install graphify if missing and registers its skill, copies the bundled skills into
+  .claude/skills/, and writes CLAUDE.agentic.md and DESIGN.md without overwriting an existing
+  CLAUDE.md. Use this skill the first time the
   bundle is installed in a project, or to upgrade an existing install. Trigger phrases: "install
   the agentic starter", "bootstrap the kit", "set up agentic coding here", "/bootstrap-laravel-agentic".
 ---
@@ -19,7 +20,7 @@ You are installing a portable Claude Code skill bundle into a Laravel project. T
 - **Never overwrite an existing `DESIGN.md`** unless the user explicitly asks to replace it.
 - **Never overwrite an existing skill folder** inside `.claude/skills/` unless the user passes `--force` (verbally or in the trigger message). Skip and report which ones were skipped.
 - **Always prompt before installing Laravel Boost.** Boost is a dev dependency that adds MCP tools and modifies composer.json — get explicit consent.
-- **Always run `graphify init`** unless the project already has `graphify-out/`. If `graphify` is not on PATH, print the install hint and continue — do not abort the bootstrap.
+- **Always check for graphify** and offer to install it (`uv tool install graphifyy` / pipx / pip) if it's not on PATH. Don't try to build the graph yourself — graph construction is an explicit user action via `/graphify .`. Do not abort the bootstrap if the user declines graphify or the install fails.
 - Do not edit any Laravel application files (models, controllers, migrations, routes, blade, vue, livewire components, env files). The bundle is agent tooling only.
 
 ## Steps
@@ -57,14 +58,31 @@ Options: **Yes, install now** / **Skip — I'll install later**.
 
 If yes: run `composer require laravel/boost --dev` then `php artisan boost:install --no-interaction`. Report any errors but continue the bootstrap.
 
-### Step 4 — Run graphify init
+### Step 4 — Install and register graphify
 
-Check if `graphify-out/` already exists in the project. If it does, skip and note in the report.
+graphify is a knowledge-graph layer that this kit's other skills assume is available. Always make sure it's wired up.
 
-Otherwise, check if `graphify` is on PATH (`command -v graphify`):
+1. If `graphify-out/` already exists in the project, skip — graphify is already initialised here.
+2. Otherwise check `command -v graphify`:
+   - **If present**: ensure the graphify skill is registered with Claude Code by running `graphify install --platform claude` (idempotent — safe to re-run). Then tell the user: "graphify is installed. Run `/graphify .` once to build the initial knowledge graph for this project." Do **not** try to build the graph yourself from the bootstrap — graph building can take minutes on a large project and the user should kick it off explicitly.
+   - **If absent**: offer to install it. Use AskUserQuestion:
 
-- If present: run `graphify init .` and continue.
-- If absent: print this line and continue (do not abort): `graphify CLI not found. Install from <https://github.com/anthropics/graphify> then run 'graphify init .' to enable the knowledge-graph workflow.`
+     > **Install graphify?**
+     > graphify turns this project into a queryable knowledge graph. The kit's skills query the graph instead of grepping raw files for many tasks. Highly recommended.
+     > Package: `graphifyy` on PyPI · Docs: <https://pypi.org/project/graphifyy/>
+
+     Options: **Yes, install via uv** / **Yes, install via pipx** / **Yes, install via pip** / **Skip — I'll install later**.
+
+     Install commands (pick by user choice):
+     - `uv tool install graphifyy` (recommended — fastest)
+     - `pipx install graphifyy`
+     - `pip install graphifyy`
+
+     After the install command, run `graphify install --platform claude` to register the graphify skill, then tell the user to run `/graphify .` to build the initial graph.
+
+     If the user picks "Skip", print this line and continue (do not abort): `graphify not installed. Install later with 'uv tool install graphifyy && graphify install --platform claude', then run '/graphify .' to build the project's knowledge graph.`
+
+If any install command fails (uv/pipx/pip not on PATH, network error), surface the error and continue the bootstrap — graphify is recommended, not required.
 
 ### Step 5 — Copy bundled skills
 
@@ -115,7 +133,7 @@ Laravel Agentic Starter Kit — bootstrap complete.
 Project:        {project-name from composer.json}
 Frontend:       {Livewire | Vue/Inertia | None}
 Laravel Boost:  {installed now | already present | skipped}
-graphify:       {initialised | already present | CLI missing — install hint printed}
+graphify:       {already present — skill registered | installed via {uv|pipx|pip} now | skipped — install hint printed}
 
 Skills installed:
   - create-laravel-spec
@@ -131,12 +149,15 @@ Files written:
   - CLAUDE.agentic.md
   - DESIGN.md
 
-Next step:
-  Add this line to your project's CLAUDE.md (create it if missing):
+Next steps:
+  1. Add this line to your project's CLAUDE.md (created automatically if it didn't exist):
 
-      @CLAUDE.agentic.md
+         @CLAUDE.agentic.md
 
-  Then run /create-laravel-spec to plan your first feature.
+  2. {if graphify was installed or already present, but graphify-out/ is missing}
+     Run /graphify . to build the project's knowledge graph (one-time, ~minutes).
+
+  3. Run /create-laravel-spec to plan your first feature.
 ```
 
 ## When the user has overrides

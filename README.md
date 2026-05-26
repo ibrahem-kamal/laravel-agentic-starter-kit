@@ -15,7 +15,7 @@ Run from inside the target Laravel project. The `bootstrap-laravel-agentic` skil
 1. Verify it's a Laravel project (offer to scaffold one if not)
 2. Detect frontend stack (Livewire vs Vue/Inertia) and ask if neither is present
 3. Prompt to install **Laravel Boost** (`composer require laravel/boost --dev` + `php artisan boost:install`)
-4. Run `graphify init .` if `graphify` is on PATH
+4. Install [graphify](https://pypi.org/project/graphifyy/) if missing (offered via `uv tool install graphifyy` / `pipx` / `pip`) and register its skill; you'll then run `/graphify .` once to build the project's knowledge graph
 5. Copy the bundled skills into `<project>/.claude/skills/`
 6. Write `CLAUDE.agentic.md` and `DESIGN.md` (without overwriting any existing `CLAUDE.md`)
 
@@ -45,7 +45,7 @@ Plus two files copied to your project root:
 
 - ❌ No PHP code (no migrations, controllers, models, Livewire components, Vue pages, Fortify scaffolding)
 - ❌ No AI chat demo / boilerplate features
-- ❌ No skills that already exist in iki's global Claude config (`livewire-development`, `fluxui-development`, `fortify-development`, `pest-testing`, `laravel-best-practices`, `tailwindcss-development`, `frontend-design`). The bundle assumes those are available and `CLAUDE.agentic.md` references them.
+- ❌ No duplicates of skills that are likely already in your global Claude config or available as community skills (`livewire-development`, `fluxui-development`, `fortify-development`, `pest-testing`, `laravel-best-practices`, `tailwindcss-development`, `frontend-design`). The bundle references them but doesn't ship copies — if you don't have them, install them separately (most are available via [skills.sh](https://www.skills.sh) or Anthropic's skill catalogue).
 - ❌ No CI / GitHub Actions templates — projects vary too much
 
 ## Workflow
@@ -94,7 +94,7 @@ Plus two files copied to your project root:
 - **Composer**
 - **Node 22+** (only if you use the frontend build step)
 - **Claude Code** (the CLI tool — this is a Claude Code skill bundle)
-- Optional: [`graphify`](https://github.com/anthropics/graphify) CLI for the knowledge-graph layer
+- Optional but recommended: [`graphifyy`](https://pypi.org/project/graphifyy/) (CLI: `graphify`) — the bootstrap skill will offer to install it for you
 
 ## Manual install (without skills.sh)
 
@@ -106,7 +106,7 @@ cp -R /tmp/agentic/.claude/skills/* <your-project>/.claude/skills/
 cp /tmp/agentic/CLAUDE.agentic.md /tmp/agentic/DESIGN.md <your-project>/
 ```
 
-Then in Claude Code, run `/bootstrap-laravel-agentic` inside your project to finish the setup (Boost prompt, graphify init, etc.).
+Then in Claude Code, run `/bootstrap-laravel-agentic` inside your project to finish the setup (Boost prompt, graphify install, profile detection).
 
 ## Philosophy
 
