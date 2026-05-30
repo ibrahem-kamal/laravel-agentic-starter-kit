@@ -123,7 +123,57 @@ If no `CLAUDE.md` exists in the project, create a minimal one containing only th
 
 The bundle ships `DESIGN.md` at its root. Copy to `<target>/DESIGN.md` only if no DESIGN.md exists. If it exists, skip and add to the "Skipped" list.
 
-### Step 8 — Final report
+### Step 8 — Offer to install recommended global skills
+
+`CLAUDE.agentic.md` references several global skills (`laravel-best-practices`, `livewire-development`, `fluxui-development`, `fortify-development`, `pest-testing`, `tailwindcss-development`, `frontend-design`, `superpowers:brainstorming`, `superpowers:systematic-debugging`, `superpowers:test-driven-development`). Most of the Laravel-specific ones ship with **Laravel Boost** — if the user installed Boost at Step 3, those are already available. The remainder usually aren't.
+
+Read `references/recommended-skills.md` for the full catalogue with descriptions and install URLs.
+
+1. **Detect what's already present.** For each skill in the catalogue, check whether it exists by looking at:
+   - `<target>/.claude/skills/<name>/SKILL.md` (project-local)
+   - `$HOME/.claude/skills/<name>/SKILL.md` (user-global)
+   - `<target>/.claude/skills/<plugin>/<name>/SKILL.md` and `$HOME/.claude/skills/<plugin>/<name>/SKILL.md` (plugin-namespaced)
+
+   For skills the catalogue marks as "ships with Laravel Boost", also check whether Boost is installed (`vendor/laravel/boost/` exists) — if so, treat the skill as present.
+
+2. **Compute the missing set.** Drop anything already present from the offer.
+
+3. **If anything is still missing, ask the user via AskUserQuestion (multiSelect: true).** Each option label is the skill name; the description is one sentence from the catalogue. The user picks zero or more to install.
+
+   Example construction (you build this dynamically based on what's missing):
+
+   ```
+   question: "Which recommended global skills should I install?"
+   header:   "Skills"
+   multiSelect: true
+   options:
+     - label: "frontend-design"
+       description: "Anthropic's production-grade UI design skill. Use for any new component or page."
+     - label: "superpowers:brainstorming"
+       description: "Required-before-creative-work skill. Explores requirements before implementation."
+     - label: "superpowers:test-driven-development"
+       description: "Disciplined TDD workflow for features and bugfixes."
+     - ... (only ones detected as missing)
+   ```
+
+4. **For each selected skill**, install via the URL in `references/recommended-skills.md`:
+
+   ```bash
+   npx skills add <github-url> --skill <skill-name>
+   ```
+
+   Run installs sequentially (don't parallelise — they touch overlapping config files in `~/.claude/`). After each, capture success/failure for the final report.
+
+5. **For skills marked "search skills.sh"** in the catalogue (no canonical URL known), do not run an install command. Instead, print:
+
+   ```
+   {skill-name}: install URL not pinned in this kit. Search skills.sh for "{skill-name}" and run:
+     npx skills add <repo-url> --skill {skill-name}
+   ```
+
+6. If everything was already present, skip the prompt entirely and note "all recommended skills already present" in the final report.
+
+### Step 9 — Final report
 
 Print a structured report. Use this exact template, filling in the bracketed values:
 
@@ -144,6 +194,12 @@ Skills installed:
 
 Skills skipped (already present, --force to overwrite):
   {list or "none"}
+
+Recommended global skills:
+  Already present: {list or "none"}
+  Installed now:   {list or "none"}
+  Declined:        {list or "none"}
+  Install hints printed (search skills.sh): {list or "none"}
 
 Files written:
   - CLAUDE.agentic.md
