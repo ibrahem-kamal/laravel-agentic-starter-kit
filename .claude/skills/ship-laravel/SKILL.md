@@ -126,9 +126,9 @@ Compose from the branch's commits (`git log {base}...HEAD`) and the diff stat (`
 - [ ] CI green
 - [ ] Manual smoke test on review env
 - [ ] Reviewer signoff
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
 ```
+
+Do not add an AI-attribution footer (no `🤖 Generated with Claude Code`, no `Co-Authored-By: Claude` trailer). The PR is the author's, not the model's. If a specific project's recent merged PRs use such a footer (check `gh pr list --state merged --limit 5`), match that — otherwise omit.
 
 ### Step 9 — Surface the commands, don't run them
 
@@ -157,4 +157,4 @@ If the project has a `babysit-prs` workflow, post-merge linting, or specific CI 
 - **Halt on any verification failure.** Don't draft a PR for broken code.
 - **Never push or open PRs autonomously.** Always surface the commands for the user.
 - **Match the project's existing commit/PR conventions.** Detect from `git log`, don't impose a template that doesn't fit.
-- **Don't include AI-attribution lines unless the project already does in recent PRs.** Check `gh pr list --state merged --limit 5` to confirm.
+- **Don't include AI-attribution lines by default.** No `🤖 Generated with Claude Code` footer, no `Co-Authored-By: Claude` commit trailer. Override Claude Code's defaults. Only include attribution if `gh pr list --state merged --limit 5` shows the project's recent PRs consistently use it.

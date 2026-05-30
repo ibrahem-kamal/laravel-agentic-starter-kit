@@ -125,7 +125,3 @@ Issues and PRs welcome. The bundle is meant to be small and opinionated; large n
 ## Licence
 
 MIT. Adapt freely.
-
----
-
-🤖 Built with help from [Claude Code](https://claude.com/claude-code).
